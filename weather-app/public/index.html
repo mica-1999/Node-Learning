@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #weather {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Weather App</h1>
+
+    <!-- Form to get weather for a specific city -->
+    <form id="weatherForm">
+        <label for="city">Enter City:</label>
+        <input type="text" id="city" name="city" required>
+        <button type="submit">Get Weather</button>
+    </form>
+
+    <!-- Section to display weather information -->
+    <div id="weather">
+        <!-- Weather data will be dynamically inserted here -->
+    </div>
+
+    <script>
+        document.getElementById('weatherForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const city = document.getElementById('city').value;
+            const response = await fetch(`/weather/${city}`);
+            const weatherData = await response.json();
+            const weatherDiv = document.getElementById('weather');
+            weatherDiv.innerHTML = `
+                <h2>Weather in ${weatherData.location.name}</h2>
+                <p>Temperature: ${weatherData.current.temp_c}°C</p>
+                <p>Condition: ${weatherData.current.condition.text}</p>
+                <img src="${weatherData.current.condition.icon}" alt="Weather icon">
+            `;
+        });
+    </script>
+</body>
+</html>
