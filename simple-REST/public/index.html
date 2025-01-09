@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD Operations</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>CRUD Operations</h1>
+
+    <!-- Form to create a new document -->
+    <h2>Create a New Document</h2>
+    <form id="createForm">
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title" required>
+        <label for="content">Content:</label>
+        <input type="text" id="content" name="content" required>
+        <button type="submit">Create</button>
+    </form>
+
+    <!-- Table to display documents -->
+    <h2>Documents</h2>
+    <table id="documentsTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Content</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Documents will be dynamically inserted here -->
+        </tbody>
+    </table>
+
+    <!-- Form to update a document -->
+    <h2>Update Document</h2>
+    <form id="updateForm">
+        <label for="updateId">ID:</label>
+        <input type="text" id="updateId" name="updateId" required>
+        <label for="updateTitle">Title:</label>
+        <input type="text" id="updateTitle" name="updateTitle" required>
+        <label for="updateContent">Content:</label>
+        <input type="text" id="updateContent" name="updateContent" required>
+        <button type="submit">Update</button>
+    </form>
+
+    <script>
+        // Function to fetch and display documents
+        async function fetchDocuments() {
+            const response = await fetch('/random');
+            const documents = await response.json();
+            const tableBody = document.getElementById('documentsTable').querySelector('tbody');
+            tableBody.innerHTML = '';
+            documents.forEach(doc => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${doc._id}</td>
+                    <td>${doc.title}</td>
+                    <td>${doc.content}</td>
+                    <td>
+                        <button onclick="deleteDocument('${doc._id}')">Delete</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Function to create a new document
+        document.getElementById('createForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const title = document.getElementById('title').value;
+            const content = document.getElementById('content').value;
+            await fetch('/random', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ title, content })
+            });
+            fetchDocuments();
+        });
+
+        // Function to update a document
+        document.getElementById('updateForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const id = document.getElementById('updateId').value;
+            const title = document.getElementById('updateTitle').value;
+            const content = document.getElementById('updateContent').value;
+            await fetch(`/random/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ title, content })
+            });
+            fetchDocuments();
+        });
+
+        // Function to delete a document
+        async function deleteDocument(id) {
+            await fetch(`/random/${id}`, {
+                method: 'DELETE'
+            });
+            fetchDocuments();
+        }
+
+        // Fetch and display documents on page load
+        fetchDocuments();
+    </script>
+</body>
+</html>

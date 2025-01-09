@@ -1,24 +1,31 @@
 // Import required modules
 const express = require("express");
 const { MongoClient, ObjectId } = require("mongodb");
+    const path = require("path");
 const app = express();
 
 // Middleware to parse JSON bodies
 app.use(express.json());
 
+// Serve static files from the "public" directory
+app.use(express.static(path.join(__dirname, "public")));
+
 // MongoDB connection URI
 const uri = "mongodb://localhost:27017";
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+const client = new MongoClient(uri);
 
 let db, collection;
 
-// Connect to MongoDB
-client.connect(err => {
-  if (err) throw err;
-  db = client.db("testing");
-  collection = db.collection("random");
-  console.log("Connected to MongoDB");
-});
+console.log("Attempting to connect to MongoDB...");
+client.connect()
+  .then(() => {
+    db = client.db("testing");
+    collection = db.collection("random");
+    console.log("Connected to MongoDB");
+  })
+  .catch(err => {
+    console.error("Failed to connect to MongoDB", err);
+  });
 
 // GET: Retrieve all documents
 app.get("/random", async (req, res) => {
