@@ -1,24 +1,5 @@
 Beginner Projects
 To-Do List API
-
-Build a RESTful API where users can:
-Add, update, delete, and view tasks.
-Mark tasks as completed.
-Use Express.js for routing and a simple JSON file or database like MongoDB for data storage.
-
-Weather App
-
-Fetch weather data using a public API (e.g., OpenWeatherMap).
-Allow users to input a city and retrieve the weather information.
-Practice API integration and display dynamic content using EJS or a frontend framework.
-URL Shortener
-
-Create a service like Bitly where users can:
-Enter a long URL and get a shortened one.
-Redirect users from the shortened URL to the original.
-Store URLs in a database like MongoDB or SQLite.
-Blog API
-
 Set up a basic blogging platform:
 Users can create, edit, delete, and view blog posts.
 Add user authentication for managing posts.

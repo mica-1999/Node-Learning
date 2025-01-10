@@ -1,16 +1,42 @@
 // Import required modules
 const express = require("express");
 const { MongoClient, ObjectId } = require("mongodb");
-    const path = require("path");
+const path = require("path");
+const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 const app = express();
+
+// Connect to MongoDB using Mongoose
+mongoose.connect('mongodb://localhost:27017/Blog', { useNewUrlParser: true, useUnifiedTopology: true });
+
+// Define the user schema
+const userSchema = new mongoose.Schema({
+  id: { type: Number, required: true, unique: true },
+  username: { type: String, required: true, unique: true },
+  passwordHash: { type: String, required: true },
+  lastActive: { type: Date, default: Date.now },
+  createdAt: { type: Date, default: Date.now },
+  email: { type: String, required: true, unique: true },
+  role: { type: String, required: true }
+}, { collection: 'users' }); // Explicitly specify the collection name
+
+// Hash password before saving the user
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('passwordHash')) return next();
+  this.passwordHash = await bcrypt.hash(this.passwordHash, 10); // Hash with bcrypt
+  next();
+});
+
+const User = mongoose.model('User', userSchema);
 
 // Middleware to parse JSON bodies
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Serve static files from the "public" directory
 app.use(express.static(path.join(__dirname, "public")));
 
-// MongoDB connection URI
+// ----------------------------------------------------------------- MONGODB -----------------------------------------------------------------
 const uri = "mongodb://localhost:27017";
 const client = new MongoClient(uri);
 
@@ -27,6 +53,41 @@ client.connect()
     console.error("Failed to connect to MongoDB", err);
   });
 
+// ----------------------------------------------------------------- AUTHENTICATION -----------------------------------------------------------------
+
+// Serve the login page
+app.get("/login", (req, res) => {
+  try {
+    res.sendFile(path.join(__dirname, "public", "auth", "login.html")); // Fixed path
+  } catch (error) {
+    res.status(500).json({ error: "Failed to load login page" });
+  }
+});
+
+// POST: Verify user credentials
+app.post("/verification", async (req, res) => {
+  try {
+    const { username, password } = req.body; // Extract username and password from request body
+
+    const user = await User.findOne({ username: username }); // Find user by username
+
+    if (!user) {
+      return res.status(404).json({ error: "User Not Found" });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.passwordHash); // Compare passwords
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: "Incorrect Password" });
+    }
+
+    res.sendFile(path.join(__dirname, "public", "dashboard", "main.html")); // Fixed path
+  } catch (error) {
+    res.status(500).json({ error: "Failed to verify user" });
+  }
+});
+
+// ----------------------------------------------------------------- ROUTES -----------------------------------------------------------------
 // GET: Retrieve all documents
 app.get("/posts", async (req, res) => {
   try {
@@ -34,15 +95,6 @@ app.get("/posts", async (req, res) => {
     res.json(documents);
   } catch (err) {
     res.status(500).json({ error: "Failed to retrieve documents" });
-  }
-});
-
-// Serve the login page
-app.get("/login", (req, res) => {
-  try {
-    res.sendFile(path.join(__dirname, "public", "login.html"));
-  } catch (error) {
-    res.status(500).json({ error: "Failed to load login page" });
   }
 });
 
@@ -99,6 +151,7 @@ app.delete("/posts/:id", async (req, res) => {
   }
 });
 
+// ----------------------------------------------------------------- SERVER -----------------------------------------------------------------
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

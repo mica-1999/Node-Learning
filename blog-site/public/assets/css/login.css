@@ -1,0 +1,129 @@
+/* General Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #333F51;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.login-container {
+    background-color: #fff;
+    padding: 40px; /* Added padding */
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 450px; /* Set width to 450px */
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    font-size: 14px;
+    color: #555;
+    display: block;
+    margin-bottom: 8px;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+input:focus {
+    border-color: #5C61E6; /* Added focus border color */
+    outline: none;
+}
+
+
+input:focus::placeholder {
+    color: #5C61E6; /* Match placeholder color with border color on focus */
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    background-color: #4CAF50;
+    color: #fff;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+p {
+    text-align: center;
+    font-size: 14px;
+}
+
+.error {
+    color: red;
+    font-size: 14px;
+    text-align: center;
+}
+
+/* Link to Registration */
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.social-login {
+    display: flex;
+    justify-content: center; /* Center the buttons */
+    gap: 10px; /* Add space between the buttons */
+    margin-top: 20px;
+}
+
+.social-login a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    color: #fff;
+    text-decoration: none;
+    font-size: 24px;
+    margin-left: 2px; /* Added margin-left */
+}
+
+.social-login a:hover {
+    opacity: 0.8;
+}
+
+.btn-x {
+    background-color: #1DA1F2;
+}
+
+.btn-github {
+    background-color: #333;
+}
+
+.btn-facebook {
+    background-color: #3b5998;
+}
+
+social-login i {
+    margin-right: 8px;
+}
