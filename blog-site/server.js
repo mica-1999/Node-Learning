@@ -37,6 +37,15 @@ app.get("/posts", async (req, res) => {
   }
 });
 
+// Serve the login page
+app.get("/login", (req, res) => {
+  try {
+    res.sendFile(path.join(__dirname, "public", "login.html"));
+  } catch (error) {
+    res.status(500).json({ error: "Failed to load login page" });
+  }
+});
+
 // GET: Retrieve a single document by ID
 app.get("/posts/:id", async (req, res) => {
   try {
