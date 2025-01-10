@@ -4,7 +4,8 @@ const bcrypt = require('bcrypt');
 
 exports.loginPage = (req, res) => {
   try {
-    res.sendFile(path.join(__dirname, "../public/auth/login.html"));
+    const messages = req.flash('error');
+    res.sendFile(path.join(__dirname, "../public/auth/login.html"), { messages });
   } catch (error) {
     res.status(500).json({ error: "Failed to load login page" });
   }
@@ -16,17 +17,31 @@ exports.verifyUser = async (req, res) => {
     const user = await User.findOne({ username: username });
 
     if (!user) {
-      return res.status(404).json({ error: "User Not Found" });
+      req.flash('error', 'User Not Found');
+      return res.redirect('/auth/login');
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
 
     if (!isPasswordValid) {
-      return res.status(401).json({ error: "Incorrect Password" });
+      req.flash('error', 'Incorrect Password');
+      return res.redirect('/auth/login');
     }
+
+    // Create session
+    req.session.user = user;
 
     res.sendFile(path.join(__dirname, "../public/dashboard/main.html"));
   } catch (error) {
     res.status(500).json({ error: "Failed to verify user" });
   }
+};
+
+exports.logout = (req, res) => {
+  req.session.destroy(err => {
+    if (err) {
+      return res.status(500).json({ error: "Failed to log out" });
+    }
+    res.redirect('/auth/login');
+  });
 };
